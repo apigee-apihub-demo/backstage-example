@@ -30,9 +30,6 @@ env:
 jobs:
   build-backstage:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./apigee-apihub-demo
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -44,14 +41,17 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install --frozen-lockfile
+          dir: apigee-apihub-demo
       - name: Run tsc
         uses: borales/actions-yarn@v4
         with:
           cmd: tsc
-      - name: Run tsc
+          dir: apigee-apihub-demo
+      - name: Run build
         uses: borales/actions-yarn@v4
         with:
           cmd: build:backend --config ../../app-config.yaml
+          dir: apigee-apihub-demo
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
@@ -60,8 +60,8 @@ jobs:
       - name: Build and push registry-server Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: packages/backend/Dockerfile
+          context: apigee-apihub-demo
+          file: apigee-apihub-demo/packages/backend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
