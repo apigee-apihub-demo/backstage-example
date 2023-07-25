@@ -52,6 +52,12 @@ jobs:
         with:
           cmd: build:backend --config ../../app-config.yaml
           dir: apigee-apihub-demo
+      - name: Log into registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
