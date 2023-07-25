@@ -37,6 +37,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: yarn
+          cache-dependency-path: apigee-apihub-demo/yarn.lock
       - name: Run install
         uses: borales/actions-yarn@v4
         with:
