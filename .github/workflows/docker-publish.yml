@@ -64,7 +64,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: name/app
+          images: backstage-example
       - name: Build and push registry-server Docker image
         uses: docker/build-push-action@v4
         with:
