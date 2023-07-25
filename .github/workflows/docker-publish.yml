@@ -1,0 +1,76 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Publish docker image
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"] # semver release
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  USERNAME: ${{ github.actor }}
+  PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+  DOCKER_REPOSITORY_OWNER: ${{github.repository_owner}}
+
+jobs:
+  build-backstage:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: yarn
+          cache-dependency-path: apigee-apihub-demo/yarn.lock
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install --frozen-lockfile
+          dir: apigee-apihub-demo
+      - name: Run tsc
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: tsc
+          dir: apigee-apihub-demo
+      - name: Run build
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: build:backend --config ../../app-config.yaml
+          dir: apigee-apihub-demo
+      - name: Log into registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{github.repository_owner}}/backstage-example
+      - name: Build and push docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: apigee-apihub-demo
+          file: apigee-apihub-demo/packages/backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
