@@ -29,6 +29,7 @@ env:
 
 jobs:
   build-backstage:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
