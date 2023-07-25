@@ -15,8 +15,6 @@
 name: Publish docker image
 
 on:
-  schedule:
-    - cron: "0 0 * * *" # each 12:00 UTC
   push:
     branches: [main]
     tags: ["v*.*.*"] # semver release
@@ -31,7 +29,10 @@ env:
 
 jobs:
   build-backstage:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apigee-apihub-demo
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -39,7 +40,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-      - run: cd apigee-apihub-demo
       - name: Run install
         uses: borales/actions-yarn@v4
         with:
