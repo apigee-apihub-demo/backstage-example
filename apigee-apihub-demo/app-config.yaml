@@ -1,9 +1,9 @@
 app:
-  title: Scaffolded Backstage App
+  title: Apigee API Hub Demo
   baseUrl: http://localhost:3000
 
 organization:
-  name: My Company
+  name: Apigee API Hub Demo
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -69,27 +69,32 @@ scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
 
 catalog:
-  import:
-    entityFilename: catalog-info.yaml
-    pullRequestBranchName: backstage-integration
-  rules:
-    - allow: [Component, System, API, Resource, Location]
+  # import:
+  #   entityFilename: catalog-info.yaml
+  #   pullRequestBranchName: backstage-integration
+  # rules:
+  #   - allow: [Component, System, API, Resource, Location]
   locations:
+    - type: url
+      target: https://github.com/apigee-apihub-demo/backstage-export/blob/main/apigee-apihub-demo/apihub-catalog.yaml
+      rules:
+        - allow: [Component, System, Domain, API, Resource, Location, Group]
+
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
-    - type: file
-      target: ../../examples/entities.yaml
+    # - type: file
+    #   target: ../../examples/entities.yaml
 
     # Local example template
-    - type: file
-      target: ../../examples/template/template.yaml
-      rules:
-        - allow: [Template]
+    # - type: file
+    #   target: ../../examples/template/template.yaml
+    #   rules:
+    #     - allow: [Template]
 
     # Local example organizational data
-    - type: file
-      target: ../../examples/org.yaml
-      rules:
-        - allow: [User, Group]
+    # - type: file
+    #   target: ../../examples/org.yaml
+    #   rules:
+    #     - allow: [User, Group]
 
     ## Uncomment these lines to add more example data
     # - type: url
