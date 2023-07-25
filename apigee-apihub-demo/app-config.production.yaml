@@ -34,6 +34,6 @@ catalog:
   # on how to get entities into the catalog.
   locations:
     - type: url
-      target: https://github.com/theganyo/backstage-export/blob/main/apigee-apihub-demo/apihub-catalog.yaml
+      target: https://github.com/apigee-apihub-demo/backstage-export/blob/main/apigee-apihub-demo/apihub-catalog.yaml
       rules:
         - allow: [Component, System, Domain, API, Resource, Location, Group]
