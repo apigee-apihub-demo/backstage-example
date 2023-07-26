@@ -29,7 +29,10 @@ env:
 
 jobs:
   build-backstage:
-    permissions: write-all
+    permissions:
+      contents: "read"
+      id-token: "write"
+      packages: "write"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -62,36 +65,35 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: ghcr container meta
-        id: ghcr-meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ghcr.io/${{github.repository_owner}}/backstage-example
-      - name: Build and push docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: apigee-apihub-demo
-          file: apigee-apihub-demo/packages/backend/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.ghcr-meta.outputs.tags }}
-          labels: ${{ steps.ghcr-meta.outputs.labels }}
 
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v1
         with:
+          token_format: access_token
+          access_token_lifetime: 300s
           workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.ARTIFACT_REGISTRY_SA }}
-      - name: pkgdev container meta
-        id: pkgdev-meta
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v2
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Docker image metadata
+        id: meta
         uses: docker/metadata-action@v4
         with:
-          images: us-central1-docker.pkg.dev/${{github.repository_owner}}/backstage-example/backstage-example
-      - name: Build and push image to artifact registry
+          images: |
+            ghcr.io/${{github.repository_owner}}/backstage-example
+            us-central1-docker.pkg.dev/apigee-apihub-demo/backstage-example/backstage-example
+
+      - name: Build and push docker images
         uses: docker/build-push-action@v4
         with:
           context: apigee-apihub-demo
           file: apigee-apihub-demo/packages/backend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.pkgdev-meta.outputs.tags }}
-          labels: ${{ steps.pkgdev-meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
