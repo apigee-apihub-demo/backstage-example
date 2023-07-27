@@ -16,8 +16,8 @@ name: Publish docker image
 
 on:
   push:
-    # branches: [main]
-    # tags: ["v*.*.*"] # semver release
+    branches: [main]
+    tags: ["v*.*.*"] # semver release
   pull_request:
     branches: [main]
 
@@ -58,14 +58,12 @@ jobs:
         with:
           cmd: build:backend --config ../../app-config.yaml
           dir: apigee-apihub-demo
-
       - name: Log into github registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v1
@@ -80,7 +78,6 @@ jobs:
           registry: us-central1-docker.pkg.dev
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
-
       - name: Docker image metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -88,7 +85,6 @@ jobs:
           images: |
             ghcr.io/${{github.repository_owner}}/backstage-example
             us-central1-docker.pkg.dev/apigee-apihub-demo/backstage-example/backstage-example
-
       - name: Build and push docker images
         uses: docker/build-push-action@v4
         with:
