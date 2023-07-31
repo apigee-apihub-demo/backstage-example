@@ -1,15 +1,21 @@
 # backstage-example
 
-This repository contains an example [Backstage](https://backstage.io) developer
-portal application for browsing data exported from API Hub.
+This repository contains an clean install example of a
+[Backstage](https://backstage.io) developer portal application, configured to
+load and display data exported from API Hub into a Github repo.
 
 ## API Hub Data
 
-API Hub data for Backstage is maintained in
+The API Hub demo data for this Backstage is maintained in
 [backstage-export](https://github.com/apigee-apihub-demo/backstage-export) repo.
 This data is automatically read by the Backstage demo in this repo.
 
-## Running Backstage
+## Live Demo
+
+You can see a [live instance](https://backstage-example-y2k5eue77q-uc.a.run.app) 
+of this Backstage application on Google Cloud Run.
+
+## Running Backstage yourself
 
 ### Docker
 
